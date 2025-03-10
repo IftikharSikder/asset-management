@@ -53,7 +53,7 @@ class AppTextStyles {
 
 class AppStrings {
   static const String appTitle = 'Employees';
-  static const String totalEmployeesLabel = 'Total Employees';
+  static const String totalEmployeesLabel = 'Department Employee Count';
   static const String allEmployeesTab = 'All Employees';
   static const String itDepartmentTab = 'IT Department';
   static const String salesTab = 'Sales';

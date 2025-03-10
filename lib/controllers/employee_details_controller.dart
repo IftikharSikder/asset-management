@@ -93,10 +93,8 @@ class EmployeeDetailsController extends GetxController {
 
   void addAsset(Map<String, dynamic> assetData) async {
     try {
-      // Add the asset to Firestore
       await FirebaseFirestore.instance.collection('assets').add(assetData);
 
-      // Refresh assets
       fetchEmployeeAssets();
     } catch (e) {
       print('Error adding asset: $e');
@@ -108,13 +106,11 @@ class EmployeeDetailsController extends GetxController {
       if (index >= 0 && index < assetDocIds.length) {
         String docId = assetDocIds[index];
 
-        // Update the asset in Firestore
         await FirebaseFirestore.instance
             .collection('assets')
             .doc(docId)
             .update(assetData);
 
-        // Update local data
         assets[index] = {...assets[index], ...assetData};
         assets.refresh();
       }
@@ -128,19 +124,16 @@ class EmployeeDetailsController extends GetxController {
       if (index >= 0 && index < assetDocIds.length) {
         String docId = assetDocIds[index];
 
-        // Delete the asset from Firestore
         await FirebaseFirestore.instance
             .collection('assets')
             .doc(docId)
             .delete();
 
-        // Remove from local lists
         assets.removeAt(index);
         assetDocIds.removeAt(index);
         assets.refresh();
         assetDocIds.refresh();
 
-        // Update total count
         totalAssets.value = assets.length;
       }
     } catch (e) {
