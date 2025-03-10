@@ -95,8 +95,10 @@ class DepartmentFilterWidget extends StatelessWidget {
                   onTap: () {
                     // Update the selected department
                     if (department == 'All Employees') {
+                      AppStrings.totalEmployeesLabel = 'All Employees';
                       controller.selectedDepartment.value = null;
                     } else {
+                      AppStrings.totalEmployeesLabel = 'Number of Employees in $department';
                       controller.selectedDepartment.value = department;
                     }
                     // Call a method to refresh the employee list with the new filter
