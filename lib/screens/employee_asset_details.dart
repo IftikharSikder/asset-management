@@ -96,7 +96,7 @@ class EmployeeAssetsDetailScreen extends StatelessWidget {
         final employeePosition = employee['designation'] ?? 'No Position';
         final department = employee['department'] ?? 'Not specified';
 
-        // Handle timestamp and duration calculation
+
         final assignedTimestamp = assetData['timestamp'];
         String assignedDateText = 'Not specified';
         String durationText = 'N/A';

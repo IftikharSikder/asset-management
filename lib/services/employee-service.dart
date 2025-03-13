@@ -24,13 +24,13 @@ class EmployeeService {
           batch.delete(assetDoc.reference);
         }
 
-        // Commit the batch deletion
+
         await batch.commit();
         
-        // After assets are deleted, now delete the employee
+
         await employeesRef.doc(id).delete();
 
-        // Show success message after both operations complete
+
         Get.snackbar(
           "Success",
           "Employee and all associated assets deleted successfully",
@@ -39,7 +39,7 @@ class EmployeeService {
           duration: Duration(seconds: 3),
         );
       } else {
-        // Employee doesn't exist
+
         Get.snackbar(
           "Error",
           "Employee not found",
@@ -48,7 +48,7 @@ class EmployeeService {
         );
       }
     } catch (error) {
-      // Show error message if operation fails
+
       Get.snackbar(
         "Error",
         "Failed to delete: $error",

@@ -15,7 +15,7 @@ class EmployeeDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Instantiate and initialize the controller
+
     final controller = Get.put(EmployeeDetailsController());
     controller.setEmployee(employee);
 

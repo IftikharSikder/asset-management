@@ -47,7 +47,7 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
       return;
     }
 
-    // Set loading to true
+
     isLoading.value = true;
 
     int newEmployeeId = lastEmployeeId.value + 1;
@@ -59,7 +59,7 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
       "designation": designation,
       "department": department,
     }).then((_) {
-      // Update the lastEmployeeId value
+
       lastEmployeeId.value = newEmployeeId;
 
       isLoading.value = false;
@@ -71,7 +71,7 @@ class _AddEmployeeScreenState extends State<AddEmployeeScreen> {
 
       if(mounted){Navigator.of(context).pop();}
     }).catchError((error) {
-      // Set loading to false
+
       isLoading.value = false;
 
       Get.snackbar(
