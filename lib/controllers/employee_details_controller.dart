@@ -8,8 +8,13 @@ class EmployeeDetailsController extends GetxController {
   final assetCounts = <String, int>{}.obs;
   final totalAssets = 0.obs;
   final isLoading = true.obs;
-
+  final isloading_1 = true.obs;
+  final assetDetails =  Rx<Map<String, dynamic>>({});
   final selectedCategory = 'Phone'.obs;
+  final assetData = Rx<Map<String, dynamic>>({});
+  final employeeData = Rx<Map<String, dynamic>>({});
+
+
   final categories = [
     'Phone',
     'Laptop',
@@ -25,6 +30,26 @@ class EmployeeDetailsController extends GetxController {
   void setEmployee(DocumentSnapshot employeeDoc) {
     employee.value = employeeDoc;
     fetchEmployeeAssets();
+  }
+
+  Future<bool> isSerialNumberUnique(String serialNumber) async {
+    try {
+      if (serialNumber.isEmpty) {
+        return false;
+      }
+
+      final QuerySnapshot snQuery = await FirebaseFirestore.instance
+          .collection('assets')
+          .where('sn', isEqualTo: serialNumber)
+          .limit(1)
+          .get();
+
+      return snQuery.docs.isEmpty;
+    } catch (e) {
+      print('Error checking for unique serial number: $e');
+      // In case of error, prevent adding the asset to be safe
+      return false;
+    }
   }
 
   void fetchEmployeeAssets() async {
@@ -84,6 +109,70 @@ class EmployeeDetailsController extends GetxController {
       print('Error fetching employee assets: $e');
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  void fetchEmployeeAssetsDetails(String serialNumber) async {
+
+    try {
+      // Query the asset with the given serial number
+      final QuerySnapshot assetQuery = await FirebaseFirestore.instance
+          .collection('assets')
+          .where('sn', isEqualTo: serialNumber)
+          .limit(1)
+          .get();
+
+      if (assetQuery.docs.isNotEmpty) {
+        // Get the asset data
+        final assetDoc = assetQuery.docs.first;
+        final asset = assetDoc.data() as Map<String, dynamic>;
+
+        // Store the asset data
+        assetData.value = Map<String, dynamic>.from(asset);
+
+        // Get employee data if available
+        if (asset.containsKey('assinee_id')) {
+          var assigneeId = asset['assinee_id'];
+
+          // Convert to string if it's not already
+          if (assigneeId is int) {
+            assigneeId = assigneeId.toString();
+          }
+
+          // Try to fetch with string ID first
+          QuerySnapshot employeeQueryString = await FirebaseFirestore.instance
+              .collection('employees')
+              .where('id', isEqualTo: assigneeId)
+              .limit(1)
+              .get();
+
+          // If not found, try with numeric ID
+          if (employeeQueryString.docs.isEmpty && assigneeId is String) {
+            int? numericId = int.tryParse(assigneeId);
+            if (numericId != null) {
+              QuerySnapshot employeeQueryNumber = await FirebaseFirestore.instance
+                  .collection('employees')
+                  .where('id', isEqualTo: numericId)
+                  .limit(1)
+                  .get();
+
+              if (employeeQueryNumber.docs.isNotEmpty) {
+                employeeData.value = Map<String, dynamic>.from(
+                    employeeQueryNumber.docs.first.data() as Map<String, dynamic>
+                );
+              }
+            }
+          } else if (employeeQueryString.docs.isNotEmpty) {
+            employeeData.value = Map<String, dynamic>.from(
+                employeeQueryString.docs.first.data() as Map<String, dynamic>
+            );
+          }
+        }
+      }
+    } catch (e) {
+      print('Error fetching asset details: $e');
+    } finally {
+      isloading_1.value = false;
     }
   }
 

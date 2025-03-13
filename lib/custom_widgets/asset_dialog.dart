@@ -1,7 +1,8 @@
+// custom_widgets/asset_dialog.dart
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:get/get.dart';
 import 'package:asset_management/controllers/employee_details_controller.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 
 class AssetDialogs {
   static void showEditAssetDialog(BuildContext context, EmployeeDetailsController controller, Map<String, dynamic> asset, int assetIndex) {
@@ -66,6 +67,7 @@ class AssetDialogs {
   static void showAddAssetDialog(BuildContext context, EmployeeDetailsController controller) {
     final TextEditingController nameController = TextEditingController();
     final TextEditingController snController = TextEditingController();
+    final TextEditingController imageUrlController = TextEditingController();
 
     // Reset selected category to default
     controller.selectedCategory.value = controller.categories[0];
@@ -103,6 +105,11 @@ class AssetDialogs {
                     }
                   },
                 )),
+                SizedBox(height: 8),
+                TextField(
+                  controller: imageUrlController,
+                  decoration: InputDecoration(labelText: 'Image URL'),
+                ),
               ],
             ),
           ),
@@ -115,30 +122,40 @@ class AssetDialogs {
             ),
             TextButton(
               child: Text('Add'),
-              onPressed: () {
+              onPressed: () async {
                 // Get employee ID
                 final employeeId = controller.employee.value?['id'];
 
                 if (employeeId != null) {
-                  // Create new asset data
-                  Map<String, dynamic> newAssetData = {
-                    'name': nameController.text,
-                    'sn': snController.text,
-                    'category': controller.selectedCategory.value,
-                    'assinee_id': employeeId,
-                    'timestamp': FieldValue.serverTimestamp(),
-                  };
+                  // Check if serial number is unique
+                  bool isUnique = await controller.isSerialNumberUnique(snController.text);
+                  if (isUnique && snController.text.isNotEmpty) {
+                    var newAssetData = {
+                      'name': nameController.text,
+                      'sn': snController.text,
+                      'category': controller.selectedCategory.value,
+                      'assinee_id': employeeId,
+                      'image_url': imageUrlController.text,
+                      'timestamp': FieldValue.serverTimestamp(),
+                    };
+                    controller.addAsset(newAssetData);
 
-                  // Call controller method to add asset
-                  controller.addAsset(newAssetData);
+                    // Close dialog
+                    Navigator.of(context).pop();
 
-                  // Close dialog
-                  Navigator.of(context).pop();
-
-                  // Show success message
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Asset added successfully')),
-                  );
+                    // Show success message
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Asset added successfully')),
+                    );
+                  } else if (snController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Serial number cannot be empty')),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Sorry! This SN exists. Try a new one.')),
+                    );
+                  }
                 }
               },
             ),

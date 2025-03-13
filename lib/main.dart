@@ -1,4 +1,5 @@
 import 'package:asset_management/bindings/initial_bindings.dart';
+import 'package:asset_management/screens/login_screen.dart';
 import 'package:asset_management/screens/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

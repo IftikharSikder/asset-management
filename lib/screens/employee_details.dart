@@ -3,8 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:asset_management/controllers/employee_details_controller.dart';
 import 'package:asset_management/utils/constants.dart';
-
-
 import '../custom_widgets/asset_dialog.dart';
 import '../custom_widgets/asset_list_item.dart';
 import '../custom_widgets/employee_info_card.dart';
@@ -58,9 +56,11 @@ class EmployeeDetailScreen extends StatelessWidget {
                   final asset = entry.value;
                   final index = entry.key;
                   return AssetListItem(
+
                     asset: asset,
                     index: index,
                     controller: controller,
+                    employee:employee,
                   );
                 }).toList(),
               ],
